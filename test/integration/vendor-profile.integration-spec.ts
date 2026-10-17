@@ -19,6 +19,7 @@ import { VendorProfileController } from '../../src/vendor/vendor-profile.control
 import { VendorProfileService } from '../../src/vendor/vendor-profile.service';
 import { VendorProfileRepository } from '../../src/vendor/vendor-profile.repository';
 import { bearer } from '../auth-helper';
+import { TracingService } from '../../src/tracing/tracing.service';
 
 describe('Vendor profile CRUD (issue #292, issue #643)', () => {
   let app: INestApplication;
@@ -40,6 +41,7 @@ describe('Vendor profile CRUD (issue #292, issue #643)', () => {
       imports: [ConfigModule],
       controllers: [VendorProfileController],
       providers: [
+        TracingService,
         VendorProfileService,
         VendorProfileRepository,
         PrismaService,
@@ -56,8 +58,9 @@ describe('Vendor profile CRUD (issue #292, issue #643)', () => {
   });
 
   beforeEach(async () => {
-    await prisma.vendorTrackingSettings.deleteMany();
-    await prisma.vendorProfile.deleteMany();
+    // Other suites leave escrows behind, and Escrow.vendorAddress references
+    // VendorProfile.address, so clear dependants first.
+    await prisma.reset();
   });
 
   afterAll(async () => {

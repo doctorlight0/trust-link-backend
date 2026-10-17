@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
 import { ConfigService } from '../config/config.service';
 import { STELLAR_HORIZON_URLS } from './stellar-endpoints';
+import { TracingService } from '../tracing/tracing.service';
 
 export const DEFAULT_HORIZON_URL = STELLAR_HORIZON_URLS.TESTNET;
 

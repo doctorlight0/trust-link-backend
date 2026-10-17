@@ -2,6 +2,8 @@ import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CursorService } from './cursor.service';
 import { CursorRepository } from './cursor.repository';
+import { TracingService } from '../tracing/tracing.service';
+import { createTracingMock } from '../../test/unit/tracing-mock';
 
 describe('CursorService', () => {
   let service: CursorService;
@@ -15,6 +17,7 @@ describe('CursorService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        { provide: TracingService, useValue: createTracingMock().service },
         CursorService,
         { provide: CursorRepository, useValue: repositoryMock },
       ],

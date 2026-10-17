@@ -49,7 +49,7 @@ describe('DLQ replay flow E2E', () => {
       }
     ).cursorService;
 
-    jest.spyOn(listener, 'parseEvent').mockReturnValue(null);
+    jest.spyOn(listener, 'parseEvent').mockResolvedValue(null);
     await cursorService.set('test-cursor');
     jest.spyOn(poller as never, 'fetchEvents' as never).mockResolvedValue([
       {

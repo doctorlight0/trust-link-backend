@@ -7,6 +7,8 @@ import { PrismaService } from './prisma/prisma.service';
 import { CacheService } from './cache/cache.service';
 import { HorizonService } from './stellar/horizon.service';
 import { SorobanHealthService } from './stellar/soroban-health.service';
+import { TracingService } from './tracing/tracing.service';
+import { createTracingMock } from '../test/unit/tracing-mock';
 
 function createMockResponse() {
   const res: Partial<Response> & {
@@ -58,6 +60,7 @@ describe('AppController', () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [
+        { provide: TracingService, useValue: createTracingMock().service },
         AppService,
         { provide: ConfigService, useValue: mockConfigService },
         { provide: PrismaService, useValue: mockPrismaService },
@@ -388,6 +391,7 @@ describe('AppController readiness — Soroban RPC (#841)', () => {
     const app: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [
+        { provide: TracingService, useValue: createTracingMock().service },
         AppService,
         {
           provide: ConfigService,

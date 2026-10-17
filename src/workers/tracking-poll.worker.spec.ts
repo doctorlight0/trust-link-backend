@@ -10,6 +10,8 @@
  * mocked; no real DB or HTTP calls are made.
  */
 
+import { createTracingMock } from '../../test/unit/tracing-mock';
+
 import { Logger } from '@nestjs/common';
 import { TrackingPollWorker } from './tracking-poll.worker';
 import { EscrowRepository } from '../escrow/escrow.repository';
@@ -100,6 +102,7 @@ function createHarness(): Harness {
     logisticsService as unknown as LogisticsService,
     contractService as unknown as ContractService,
     configService as unknown as ConfigService,
+    createTracingMock().service,
   );
 
   return {

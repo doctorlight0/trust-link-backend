@@ -145,7 +145,11 @@ export class BlockchainListenerService {
   ): Promise<ParsedSorobanEvent[]> {
     return this.traced(
       'stellar.event.parse_batch',
-      { 'trustlink.stellar.event_count': Array.isArray(rawEvents) ? rawEvents.length : 0 },
+      {
+        'trustlink.stellar.event_count': Array.isArray(rawEvents)
+          ? rawEvents.length
+          : 0,
+      },
       () => this.parseEventsInternal(rawEvents),
     );
   }

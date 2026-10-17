@@ -607,10 +607,10 @@ describe('EscrowService: tracking, idempotency, evidence upload, and vendor list
       },
     );
 
-    it('never writes a path segment from the filename into the object key', () => {
+    it('never writes a path segment from the filename into the object key', async () => {
       s3Presign.presign.mockReturnValue('https://signed-url');
 
-      const result = service.generateEvidenceUploadUrl(
+      const result = await service.generateEvidenceUploadUrl(
         'buyer-1',
         'a.jpg/../../x',
       );

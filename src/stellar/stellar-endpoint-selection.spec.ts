@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { createTracingMock } from '../../test/unit/tracing-mock';
 import axios from 'axios';
 import { resolveStellarServerRpcUrl } from './stellar-endpoint-resolver';
 import { ConfigService } from '../config/config.service';
@@ -31,6 +32,7 @@ function makePoller(values: Record<string, unknown>): SorobanPollerService {
     {} as never,
     {} as never,
     {} as never,
+    createTracingMock().service,
   );
 }
 
@@ -89,6 +91,7 @@ describe('Stellar endpoint selection (#871)', () => {
     ] as const)('resolves the %s default Horizon URL', (network, expected) => {
       const service = new HorizonService(
         config({ STELLAR_NETWORK: network, STELLAR_HORIZON_URL: undefined }),
+        createTracingMock().service,
       );
 
       expect(service.getHorizonUrl()).toBe(expected);
@@ -100,6 +103,7 @@ describe('Stellar endpoint selection (#871)', () => {
           STELLAR_NETWORK: 'MAINNET',
           STELLAR_HORIZON_URL: 'https://horizon.override.example',
         }),
+        createTracingMock().service,
       );
 
       expect(service.getHorizonUrl()).toBe('https://horizon.override.example');
@@ -123,6 +127,7 @@ describe('Stellar endpoint selection (#871)', () => {
             get: jest.fn().mockResolvedValue(undefined),
             set: jest.fn(),
           } as never,
+          createTracingMock().service,
         );
 
         await service.onModuleInit();
