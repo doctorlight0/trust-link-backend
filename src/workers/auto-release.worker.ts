@@ -116,7 +116,9 @@ export class AutoReleaseWorker implements OnModuleInit, OnApplicationShutdown {
     this.running = true;
 
     try {
-      await this.runCycle(referenceTime);
+      await this.traced('worker.auto_release.run', {}, () =>
+        this.runCycle(referenceTime),
+      );
     } finally {
       // Cleared even when the cycle throws, or the worker would refuse every
       // subsequent tick and silently stop releasing escrows for the lifetime
