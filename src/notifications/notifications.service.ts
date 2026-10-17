@@ -1,3 +1,4 @@
+import { TracingService } from '../tracing/tracing.service';
 import {
   Inject,
   Injectable,
@@ -92,7 +93,28 @@ export class NotificationsService implements OnModuleInit {
     private readonly config?: ConfigService,
     @Optional()
     private readonly vendorProfiles?: VendorProfileRepository,
+    @Optional()
+    private readonly tracing?: TracingService,
   ) {}
+
+  /**
+   * Runs `fn` inside a notification span.
+   *
+   * Spans record the notification type and channel so a slow or failing
+   * dispatch can be traced. Recipient addresses, message bodies and contact
+   * details are never recorded as attributes. Tracing is optional, so a
+   * service built without it still dispatches normally.
+   */
+  private traced<T>(
+    name: string,
+    attributes: Record<string, string | number | boolean>,
+    fn: () => T | Promise<T>,
+  ): Promise<T> {
+    if (!this.tracing) {
+      return Promise.resolve(fn());
+    }
+    return this.tracing.withSpan(name, { attributes }, fn);
+  }
 
   /**
    * #839 — Reports an unusable email configuration at boot.

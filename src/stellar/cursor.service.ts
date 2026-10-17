@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { CursorRepository } from './cursor.repository';
+import { TracingService } from '../tracing/tracing.service';
 
 /**
  * Issue #306 – Database-backed cursor persistence for the blockchain listener.
@@ -12,7 +13,25 @@ export class CursorService {
   private readonly logger = new Logger(CursorService.name);
   private static readonly CURSOR_KEY = 'stellar-listener';
 
-  constructor(private readonly cursorRepository: CursorRepository) {}
+  constructor(
+    private readonly cursorRepository: CursorRepository,
+    private readonly tracing: TracingService,
+  ) {}
+
+  /**
+   * Runs `fn` inside a Stellar span.
+   *
+   * Spans here carry identifiers such as the contract escrow id, the network,
+   * and the contract function. Signing secrets, secret keys and full
+   * transaction envelopes are never recorded as attributes.
+   */
+  private traced<T>(
+    name: string,
+    attributes: Record<string, string | number | boolean>,
+    fn: () => T | Promise<T>,
+  ): Promise<T> {
+    return this.tracing.withSpan(name, { attributes }, fn);
+  }
 
   /**
    * Read the persisted cursor value. Returns `undefined` when no cursor has

@@ -10,6 +10,7 @@ import {
   AutoReleaseSourceNotConfiguredError,
 } from '../../src/config/config.service';
 import { ensureVendors } from '../prisma-helpers';
+import { TracingService } from '../../src/tracing/tracing.service';
 
 /**
  * Issue #277 — Integration tests for concurrent auto-release collision detection.
@@ -30,6 +31,7 @@ describe('Auto-release collision detection (issue #277)', () => {
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
+        TracingService,
         PrismaService,
         EscrowRepository,
         DisputeRepository,

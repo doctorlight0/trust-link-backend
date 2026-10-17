@@ -18,6 +18,8 @@ import { NotificationsService } from '../../src/notifications/notifications.serv
 import { EscrowRecord } from '../../src/prisma/prisma.service';
 import { S3PresignService } from '../../src/common/services/s3-presign.service';
 import { ContractService } from '../../src/stellar/contract.service';
+import { TracingService } from '../../src/tracing/tracing.service';
+import { createTracingMock } from './tracing-mock';
 
 const ESCROW_ID = 'escrow-caching-001';
 const TRACKING_ID = 'TRK-CACHE-001';
@@ -71,6 +73,7 @@ describe('EscrowService tracking cache (issue #308)', () => {
 
     const moduleRef = await Test.createTestingModule({
       providers: [
+        { provide: TracingService, useValue: createTracingMock().service },
         EscrowService,
         { provide: EscrowRepository, useValue: repository },
         { provide: LogisticsService, useValue: logisticsService },

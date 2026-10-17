@@ -5,6 +5,7 @@ import { StellarWebhookDto } from '../webhooks/dto/stellar-webhook.dto';
 import { StellarWebhookService } from '../webhooks/stellar-webhook.service';
 import { CursorService } from './cursor.service';
 import { STELLAR_HORIZON_URLS } from './stellar-endpoints';
+import { TracingService } from '../tracing/tracing.service';
 
 @Injectable()
 export class EventReplayService implements OnModuleInit {

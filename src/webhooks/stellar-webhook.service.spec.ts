@@ -27,6 +27,8 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { EscrowRecord } from '../prisma/prisma.service';
 import { StellarWebhookDto } from './dto/stellar-webhook.dto';
 import { StellarWebhookService } from './stellar-webhook.service';
+import { TracingService } from '../tracing/tracing.service';
+import { createTracingMock } from '../../test/unit/tracing-mock';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -109,6 +111,7 @@ describe('StellarWebhookService – handlePayment (issue #396)', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        { provide: TracingService, useValue: createTracingMock().service },
         StellarWebhookService,
         { provide: EscrowRepository, useValue: mockEscrowRepository },
         { provide: ConfigService, useValue: mockConfigService },
@@ -337,7 +340,9 @@ describe('StellarWebhookService – handlePayment (issue #396)', () => {
     });
     notificationsService.notifyFunded.mockReturnValue(new Promise(() => {}));
 
-    await expect(runPayment(makePaymentDto())).resolves.toBeUndefined();
+    await expect(runPayment(makePaymentDto())).resolves.toEqual({
+      processed: true,
+    });
 
     expect(notificationsService.notifyFunded).toHaveBeenCalledTimes(1);
   });
@@ -355,7 +360,9 @@ describe('StellarWebhookService – handlePayment (issue #396)', () => {
       .spyOn(service['logger'], 'error')
       .mockImplementation(() => undefined);
 
-    await expect(runPayment(makePaymentDto())).resolves.toBeUndefined();
+    await expect(runPayment(makePaymentDto())).resolves.toEqual({
+      processed: true,
+    });
     await new Promise(process.nextTick);
 
     expect(loggerErrorSpy).toHaveBeenCalledWith(

@@ -59,8 +59,7 @@ const TERMINAL_STATES = new Set<string>([
 ]);
 
 export type SyncResult =
-  | { skipped: boolean; reason?: string }
-  | { skipped: false };
+  { skipped: boolean; reason?: string } | { skipped: false };
 
 @Injectable()
 export class EscrowService {

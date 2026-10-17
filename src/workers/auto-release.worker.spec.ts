@@ -1,3 +1,4 @@
+import { createTracingMock } from '../../test/unit/tracing-mock';
 import { Logger } from '@nestjs/common';
 import { AutoReleaseWorker } from './auto-release.worker';
 import { EscrowRepository } from '../escrow/escrow.repository';
@@ -9,6 +10,7 @@ import {
 } from '../config/config.service';
 import { EscrowRecord, DisputeRecord } from '../prisma/prisma.service';
 import { Test } from '@nestjs/testing';
+import { TracingService } from '../tracing/tracing.service';
 
 const TEST_AUTO_RELEASE_SOURCE =
   'GCKFBEIYTKP5RQGHKGKFHVOPXQVQPQWO7EEQOFTIYSDIN2R7RQNU3XXY';
@@ -318,6 +320,7 @@ describe('AutoReleaseWorker', () => {
     it('resolves through Nest dependency injection with the same collaborators', async () => {
       const moduleRef = await Test.createTestingModule({
         providers: [
+          { provide: TracingService, useValue: createTracingMock().service },
           AutoReleaseWorker,
           { provide: EscrowRepository, useValue: escrowRepository },
           { provide: DisputeRepository, useValue: disputeRepository },
@@ -478,6 +481,7 @@ describe('AutoReleaseWorker reentrancy guard (#840)', () => {
       disputeRepository,
       contractService,
       configService,
+      createTracingMock().service,
     );
   });
 

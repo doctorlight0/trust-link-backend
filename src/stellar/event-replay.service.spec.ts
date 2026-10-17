@@ -5,6 +5,8 @@ import { ConfigService } from '../config/config.service';
 import { StellarWebhookService } from '../webhooks/stellar-webhook.service';
 import { CursorService } from './cursor.service';
 import { StellarWebhookDto } from '../webhooks/dto/stellar-webhook.dto';
+import { TracingService } from '../tracing/tracing.service';
+import { createTracingMock } from '../../test/unit/tracing-mock';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -31,6 +33,7 @@ describe('EventReplayService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        { provide: TracingService, useValue: createTracingMock().service },
         EventReplayService,
         { provide: ConfigService, useValue: configService },
         { provide: StellarWebhookService, useValue: webhookService },
