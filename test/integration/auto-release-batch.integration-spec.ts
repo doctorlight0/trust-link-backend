@@ -10,6 +10,7 @@ import {
   AutoReleaseSourceNotConfiguredError,
 } from '../../src/config/config.service';
 import { ensureVendors } from '../prisma-helpers';
+import { TracingService } from '../../src/tracing/tracing.service';
 
 /**
  * Integration tests for auto-release worker batch processing with partial failures.
@@ -32,6 +33,7 @@ describe('Auto-release batch processing with partial failures', () => {
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       providers: [
+        TracingService,
         PrismaService,
         EscrowRepository,
         DisputeRepository,

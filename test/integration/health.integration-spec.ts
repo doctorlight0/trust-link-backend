@@ -8,6 +8,7 @@ import { PrismaService } from '../../src/prisma/prisma.service';
 import { CacheService } from '../../src/cache/cache.service';
 import { HorizonService } from '../../src/stellar/horizon.service';
 import { SorobanHealthService } from '../../src/stellar/soroban-health.service';
+import { TracingService } from '../../src/tracing/tracing.service';
 
 const mockFetch = jest.fn();
 
@@ -47,6 +48,7 @@ describe('GET /health integration (issue #55)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       controllers: [AppController],
       providers: [
+        TracingService,
         AppService,
         { provide: ConfigService, useValue: mockConfigService },
         { provide: PrismaService, useValue: prisma },

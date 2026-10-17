@@ -14,6 +14,8 @@ import { VendorProfileRepository } from '../../src/vendor/vendor-profile.reposit
 import { CreateVendorProfileDto } from '../../src/vendor/dto/create-vendor-profile.dto';
 import { UpdateVendorProfileDto } from '../../src/vendor/dto/update-vendor-profile.dto';
 import { UpdateNotificationPreferencesDto } from '../../src/vendor/dto/update-notification-preferences.dto';
+import { TracingService } from '../../src/tracing/tracing.service';
+import { createTracingMock } from './tracing-mock';
 
 // ── fixture factory ────────────────────────────────────────────────────────
 
@@ -103,6 +105,7 @@ describe('VendorProfileService (issue #287)', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        { provide: TracingService, useValue: createTracingMock().service },
         VendorProfileService,
         { provide: VendorProfileRepository, useValue: repository },
       ],

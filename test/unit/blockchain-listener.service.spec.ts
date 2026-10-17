@@ -137,7 +137,7 @@ describe('BlockchainListenerService — Soroban event parsing (issue #49)', () =
       };
 
       await expect(service.parseEvent(raw)).resolves.not.toThrow();
-      expect(service.parseEvent(raw)).toBeNull();
+      await expect(service.parseEvent(raw)).resolves.toBeNull();
     });
 
     it('returns null for a corrupted value buffer', async () => {
@@ -146,14 +146,14 @@ describe('BlockchainListenerService — Soroban event parsing (issue #49)', () =
         value: 'AAAA-garbage-not-xdr',
       };
 
-      expect(service.parseEvent(raw)).toBeNull();
+      await expect(service.parseEvent(raw)).resolves.toBeNull();
     });
 
     it('returns null for null / undefined / non-object input', async () => {
-      expect(service.parseEvent(null)).toBeNull();
-      expect(service.parseEvent(undefined)).toBeNull();
+      await expect(service.parseEvent(null)).resolves.toBeNull();
+      await expect(service.parseEvent(undefined)).resolves.toBeNull();
       // @ts-expect-error — deliberately wrong type to prove runtime guard
-      expect(service.parseEvent('not-an-object')).toBeNull();
+      await expect(service.parseEvent('not-an-object')).resolves.toBeNull();
     });
 
     it('treats a missing/non-array topics field as empty rather than crashing', async () => {
@@ -191,7 +191,7 @@ describe('BlockchainListenerService — Soroban event parsing (issue #49)', () =
 
     it('returns an empty array for a non-array input', async () => {
       // @ts-expect-error — deliberately wrong type
-      expect(service.parseEvents(null)).toEqual([]);
+      await expect(service.parseEvents(null)).resolves.toEqual([]);
     });
 
     it('returns an empty array when every event is corrupt (pipeline survives)', async () => {
