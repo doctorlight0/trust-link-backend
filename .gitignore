@@ -10,8 +10,6 @@ coverage*/
 # Local environment. Never commit a real secret.
 # .env.example documents every variable and stays tracked.
 # .env.test holds throwaway values for the test suite and stays tracked.
-.env
-.env.local
 .env.*.local
 
 # OS and editor noise
@@ -23,3 +21,12 @@ upload_issues.sh
 WAVE_ISSUES.md
 .github/copilot-instructions.md
 /data
+.pg_data
+
+# Wave issue drafts and survey notes, kept locally
+ISSUE_DRAFTS_WAVE*.md
+DEV_BREAKAGE_*.md
+issue-*-body.md
+publish-wave-*.sh
+/wave-bodies/
+config.bat
