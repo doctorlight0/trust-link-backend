@@ -10,28 +10,29 @@ import { ProviderCredentialRepository } from './provider-credential.repository';
 @Module({
   imports: [ConfigModule],
   providers: [
+    ProviderCredentialRepository,
+    GiglLogisticsService,
+    {
+      provide: LogisticsService,
+      useExisting: GiglLogisticsService,
+    },
     {
       provide: GiglClient,
-      useFactory: (config: ConfigService) => {
+      useFactory: (config: ConfigService, logisticsService: GiglLogisticsService) => {
         const baseUrl = config.get<string>('LOGISTICS_API_BASE_URL');
-        const envApiToken = config.get<string>('LOGISTICS_API_KEY');
 
         if (!baseUrl) {
           return null;
         }
 
+        // Read the key dynamically so rotations via rotateApiKey() take effect
+        // immediately without a process restart (issue #1054).
         return new GiglClient({
           baseUrl,
-          getApiToken: () => envApiToken || null,
+          getApiToken: () => logisticsService.getApiKey(),
         });
       },
-      inject: [ConfigService],
-    },
-    GiglLogisticsService,
-    ProviderCredentialRepository,
-    {
-      provide: LogisticsService,
-      useExisting: GiglLogisticsService,
+      inject: [ConfigService, GiglLogisticsService],
     },
   ],
   exports: [GiglClient, GiglLogisticsService, LogisticsService],
