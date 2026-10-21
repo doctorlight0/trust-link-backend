@@ -155,24 +155,37 @@ export class TrackingPollWorker implements OnModuleInit, OnApplicationShutdown {
 
   /**
    * Runs `worker` over `items` with at most `concurrency` in flight at once.
-   * Errors from individual items are caught and logged by the caller's
-   * traced wrapper, so one failed escrow never aborts the rest of the batch.
+   * A failure on one item is logged as `tracking_poll.escrow_failed` and the
+   * remaining items continue — one bad carrier call never aborts the batch
+   * (issue #1057).
    */
-  private async runWithConcurrency<T>(
+  private async runWithConcurrency<T extends { id: string }>(
     items: T[],
     concurrency: number,
     worker: (item: T) => Promise<void>,
   ): Promise<void> {
     let index = 0;
-    const next = (): Promise<void | undefined> => {
+    const next = async (): Promise<void> => {
       if (index >= items.length) {
-        return undefined;
+        return;
       }
       const item = items[index++];
-      return worker(item).then(() => next());
+      try {
+        await worker(item);
+      } catch (error) {
+        this.logger.error(
+          JSON.stringify({
+            msg: 'tracking_poll.escrow_failed',
+            escrowId: item.id,
+            error: error instanceof Error ? error.message : String(error),
+          }),
+          error instanceof Error ? error.stack : undefined,
+        );
+      }
+      return next();
     };
     await Promise.all(
-      Array.from({ length: Math.min(concurrency, items.length) }).map(next),
+      Array.from({ length: Math.min(concurrency, items.length) }).map(() => next()),
     );
   }
 
